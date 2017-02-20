@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+	<head>   
+		<title>mootools</title>   
+		<script type="text/javascript" src="js/mootools.js"></script>
+		<script type="text/javascript" src="js/common.js"></script>
+		<script type="text/javascript" src="js/tree.js"></script>
+		<script type="text/javascript" src="js/location.js"></script>
+		<script type="text/javascript" language=JavaScript>
+		function testTree() {
+			var tree = new Tree();
+			tree.add(["a", "b", "c", "d"]);
+			tree.add(["a", "b", "c", "e"]);
+			if(tree.getCount() != 5)
+				alert("fail 1");
+			tree.del(["a", "b", "c"]);
+			tree.add(["a", "c"]);
+			tree.add(["a", "d"]);
+			if(tree.getCount() != 4)
+				alert("fail 2");
+			
+			var node = tree.get(["a"]);
+			if(!node)
+				alert("fail 3");
+			if(node.getCount() != node.getTotal())
+				alert("fail 4");
+			
+			var ret = []; 
+			node = tree.get(["a"]);
+			node.each(function(n) {
+				ret.push(n.getKey());
+			});
+			if(ret.toString() != ["a", "b", "c", "d"].toString())
+				alert("fail 5, "+ret.toString());
+			
+			ret = [];
+			node.some(function(n) {
+				if(n.getKey() == "c") {
+					ret.push("c");
+					return true;
+				}
+				return false;
+			});
+			if(ret.toString() != ["c"].toString())
+				alert("fail 6, "+ret.toString());
+			ret = [];
+			
+			var dup = node.filter(function(n) {
+				return true;
+			});
+			if(!dup || dup.getCount() != node.getCount())
+				alert("fail 7");
+			dup.every(function(n) {
+				if(n.getKey() != "c") {
+					ret.push(n.getKey());
+					return true;
+				}
+				return false;
+			});
+			if(ret.toString() != ["a", "b"].toString())
+				alert("fail 8, "+ret.toString());
+			dup.get("b").add("c");
+			if(dup.getTotal() != 4)
+				alert("fail 9");
+			dup.clear();
+			if(dup.getTotal() != 0)
+				alert("fail 10");
+			delete dup;
+			
+			dup = new Node("Beijing");
+			tree.getRoot().insert(dup);
+			
+			alert("success!");
+			
+			return;
+		}
+		
+		function testLocation() {
+			var ret, loc = new Location("Beijing", 10, 10);
+			var China = new Tree();
+			China.get([]).insert(loc);
+			ret = China.get(["Beijing"]);
+			if(ret != loc)
+				alert("fail 1");
+			var bj = China.getRoot().get("Beijing");
+			if(bj != loc)
+				alert("fail 2");
+			loc = new Location("Haidian", 20, 20);
+			China.insert(["Beijing"], loc);
+			ret = China.get(["Beijing", "Haidian"]);
+			if(ret != loc)
+				alert("fail 3");
+			China.add(["a", "b", "c", "d",]);
+			China.add(["a", "1", "2",]);
+			China.add(["a", "B", "C",]);
+			China.extend([new Location("a", 1, 1),
+				new Location("b", 2, 2),
+				new Location("c", 3, 3),
+				new Location("d", 4, 4)]);
+			loc = China.get(["a"]);
+			if(loc.lat != 1 || loc.lgt != 1)
+				alert("fail 4");
+			alert("success!");
+			
+			return;
+		}
+		
+		testLocation();
+		</script>
+	</head>
+	<body>
+		<button id="test">test</button>
+		<div id="data">data</div>
+	</body>
+</html>
+
